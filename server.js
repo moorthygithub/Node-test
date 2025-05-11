@@ -45,7 +45,7 @@ app.post("/api/profolio", async (req, res) => {
     await pool.query(query, values);
     const mailOptions = {
       from: `"Portfolio App" <${process.env.EMAIL_USER}>`,
-      to: "moorthy,chandiran21@gmail.com", // Your target email address
+      to: "moorthy.chandiran21@gmail.com", // Your target email address
       subject: "New Portfolio Submission",
       html: `
         <h2>New Portfolio Submitted</h2>
