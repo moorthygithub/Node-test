@@ -80,15 +80,14 @@ app.delete("/api/profolio/:id", async (req, res) => {
     const query = `DELETE FROM PROFOLIOS WHERE id = $1`;
     const values = [id];
     const result = await pool.query(query, values);
-    // const result = await pool.query("DELETE FROM PROFOLIOS WHERE id = $1", [
-    //   id,
-    // ]);
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Profile not found" });
+    if (result.rowCount > 0) {
+      await pool.query("ALTER SEQUENCE profolios_id_seq RESTART WITH 1");
+
+      res.status(200).json({ message: "Profile deleted and ID reset to 1" });
+    } else {
+      res.status(404).json({ error: "Profile not found" });
     }
-
-    res.status(200).json({ message: "Profile deleted successfully" });
   } catch (err) {
     console.error("❌ Error deleting profile:", err);
     res.status(500).json({ error: "Server error" });
