@@ -53,19 +53,20 @@ app.get("/api/profolios", async (req, res) => {
 });
 app.put("/api/profolio-update", async (req, res) => {
   try {
-    const { Firstname, Lastname, Email, Phone, Description } = req.body;
-    if (!Firstname || !Lastname || !Email || !Phone || !Description) {
+    const { id, Firstname, Lastname, Email, Phone, Description } = req.body;
+    if (!id || !Firstname || !Lastname || !Email || !Phone || !Description) {
       return res.status(400).json({ error: "Missing required fields" });
     }
     const query = `
       UPDATE PROFOLIOS
       SET Firstname = $1, Lastname = $2, Email = $3, Phone = $4, Description = $5
-      WHERE Email = $3
+      WHERE id = $6
     `;
-    const values = [Firstname, Lastname, Email, Phone, Description];
+    console.log("Received id:", id);
+    const values = [Firstname, Lastname, Email, Phone, Description, id];
     const result = await pool.query(query, values);
-        if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Profile not found" });
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: `Profile not found ${id}` });
     }
     res.status(200).json({ message: "✅ Profile updated successfully!" });
   } catch (err) {
@@ -73,6 +74,7 @@ app.put("/api/profolio-update", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
