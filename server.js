@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
+const nodemailer = require("nodemailer");
 
 const app = express();
 app.use(cors());
@@ -14,7 +15,7 @@ const pool = new Pool({
   port: process.env.DB_PORT,
   ssl: { rejectUnauthorized: false },
 });
-pool;
+// pool;
 // .connect()
 // .then(() => {
 //   console.log("Successfully connected to the database.");
@@ -22,7 +23,13 @@ pool;
 // .catch((err) => {
 //   console.error("Error connecting to the database:", err);
 // });
-
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 app.post("/api/profolio", async (req, res) => {
   console.log("Received data:", req.body);
   const { Firstname, Lastname, Email, Phone, Description } = req.body;
@@ -36,6 +43,20 @@ app.post("/api/profolio", async (req, res) => {
   const values = [Firstname, Lastname, Email, Phone, Description];
   try {
     await pool.query(query, values);
+    const mailOptions = {
+      from: `"Portfolio App" <${process.env.EMAIL_USER}>`,
+      to: "moorthy,chandiran21@gmail.com", // Your target email address
+      subject: "New Portfolio Submission",
+      html: `
+        <h2>New Portfolio Submitted</h2>
+        <p><strong>Firstname:</strong> ${Firstname}</p>
+        <p><strong>Lastname:</strong> ${Lastname}</p>
+        <p><strong>Email:</strong> ${Email}</p>
+        <p><strong>Phone:</strong> ${Phone}</p>
+        <p><strong>Description:</strong><br>${Description}</p>
+      `,
+    };
+    await transporter.sendMail(mailOptions);
     console.log("✅ Data inserted successfully!");
     res.status(200).json({ message: "✅ Data inserted successfully!" });
   } catch (err) {
