@@ -1,4 +1,3 @@
-// server.js
 require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
@@ -53,6 +52,21 @@ app.post("/api/profolio", async (req, res) => {
   } catch (err) {
     // If there's an error, log it and send an error response
     console.error("❌ Error inserting data:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// GET route to fetch all data from the PROFOLIOS table
+app.get("/api/profolios", async (req, res) => {
+  try {
+    // Query to select all rows from the PROFOLIOS table
+    const result = await pool.query("SELECT * FROM PROFOLIOS");
+    
+    // Send the data as a JSON response
+    res.status(200).json(result.rows);
+  } catch (err) {
+    // If there's an error, log it and send an error response
+    console.error("❌ Error fetching data:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
