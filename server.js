@@ -62,7 +62,6 @@ app.put("/api/profolio-update", async (req, res) => {
       SET Firstname = $1, Lastname = $2, Email = $3, Phone = $4, Description = $5
       WHERE id = $6
     `;
-    console.log("Received id:", id);
     const values = [Firstname, Lastname, Email, Phone, Description, id];
     const result = await pool.query(query, values);
     if (result.rowCount === 0) {
@@ -71,6 +70,27 @@ app.put("/api/profolio-update", async (req, res) => {
     res.status(200).json({ message: "✅ Profile updated successfully!" });
   } catch (err) {
     console.error("❌ Error updating data:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+app.delete("/api/profolio/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const query = `DELETE FROM PROFOLIOS WHERE id = $1`;
+    const values = [id];
+    const result = await pool.query(query, values);
+    // const result = await pool.query("DELETE FROM PROFOLIOS WHERE id = $1", [
+    //   id,
+    // ]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Profile not found" });
+    }
+
+    res.status(200).json({ message: "Profile deleted successfully" });
+  } catch (err) {
+    console.error("❌ Error deleting profile:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
