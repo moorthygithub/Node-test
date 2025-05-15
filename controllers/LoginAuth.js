@@ -43,18 +43,22 @@ exports.login = async (req, res) => {
     const istTime = expiresAt.toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
     });
-    return res
-      .status(200)
-      .json({
-        token,
-        expiresAt: istTime,
-        username: user.email,
-        usertype: user.usertype,
-        name: user.name,
-        id: user.id,
-      });
+    return res.status(200).json({
+      token,
+      expiresAt: istTime,
+      username: user.email,
+      usertype: user.usertype,
+      name: user.name,
+      id: user.id,
+    });
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    // return res.status(500).json({ error: "Internal Server Error" });
+    const isDevelopment = process.env.JWT_SECRET !== "production";
+
+    return res.status(500).json({
+      error: "Login failed",
+      ...(isDevelopment && { message: error.message }, JWT_SECRET),
+    });
   }
 };
