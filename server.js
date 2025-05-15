@@ -5,7 +5,11 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+const isProduction = process.env.NODE_ENV == "production";
 
+require("dotenv").config({
+  path: isProduction ? "/etc/secrets/env" : ".env",
+});
 // Routes
 app.use("/uploads", express.static("uploads"));
 
@@ -22,6 +26,8 @@ app.use("/api/profolio", verifyToken, profolioRoutes);
 app.use("/api/product", verifyToken, upload.array("Images", 5), productRoutes);
 
 const PORT = process.env.PORT || 3000;
+const ENV = process.env.DATABASE_URL;
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(`🚀 env ${ENV}`);
 });
