@@ -21,14 +21,16 @@ const pool = new Pool({
 (async () => {
   try {
     const client = await pool.connect();
-    const result = await client.query(
-      "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
-    );
-    console.log("✅ PostgreSQL connected successfully!");
-    console.log(
-      "Available tables:",
-      result.rows.map((row) => row.table_name)
-    );
+    const dbName = await client.query(`SELECT current_database();`);
+    console.log("✅ Connected to database:", dbName.rows[0].current_database);
+
+    const result = await client.query(`
+      SELECT table_name
+      FROM information_schema.tables
+      WHERE table_schema = 'public';
+    `);
+    console.log("📋 Tables:");
+    result.rows.forEach((row) => console.log(`- ${row.table_name}`));
     client.release();
   } catch (err) {
     console.error("❌ PostgreSQL connection failed:", err);
