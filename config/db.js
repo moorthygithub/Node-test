@@ -15,9 +15,12 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }, // Required for Supabase
 });
-
+const result = await pool.query(
+  "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+);
 pool
   .connect()
+  .then(() => console.log("Available tables in DB:", result.rows))
   .then(() => console.log("✅ PostgreSQL connected successfully!"))
   .catch((err) => console.error("❌ PostgreSQL connection failed:", err));
 
