@@ -54,11 +54,13 @@ exports.login = async (req, res) => {
   } catch (error) {
     console.error("Login error:", error);
     // return res.status(500).json({ error: "Internal Server Error" });
+    console.error(error.stack, "stackstackstack");
+    console.log(process.env.JWT_SECRET, "process.env.JWT_SECRET");
     const isDevelopment = process.env.JWT_SECRET !== "production";
 
     return res.status(500).json({
       error: "Login failed",
-      ...(isDevelopment && { message: error.message }, JWT_SECRET),
+      ...(isDevelopment && { message: error.message }),
     });
   }
 };
