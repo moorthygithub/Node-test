@@ -59,7 +59,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/profolio", loginRoutes);
 app.use("/api/profolio", sinupRoutes);
-app.use("/api/profolio", verifyToken, profolioRoutes);
+app.use("/api/profolio",  profolioRoutes);
 app.use("/api/product", verifyToken, upload.array("Images", 5), productRoutes);
 
 // Test base route
