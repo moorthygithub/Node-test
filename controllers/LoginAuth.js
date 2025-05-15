@@ -57,6 +57,10 @@ exports.login = async (req, res) => {
     console.error(error.stack, "stackstackstack");
     console.log(process.env.JWT_SECRET, "process.env.JWT_SECRET");
     const isDevelopment = process.env.JWT_SECRET !== "production";
+    const result = await pool.query(
+      "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';"
+    );
+    console.log("Available tables in DB:", result.rows);
 
     return res.status(500).json({
       error: "Login failed",
